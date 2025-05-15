@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          submodules: true  # サブモジュールを含めてクローン
 
       - name: Set up Python
         uses: actions/setup-python@v3
@@ -25,22 +23,56 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # requirements.txtのパスを修正 (プロジェクトルートからの相対パス)
-          # day1/lecture-ai-engineering/day5/requirements.txt を想定
-          # もしday5ディレクトリ直下にrequirements.txtがない場合は、適切なパスに変更してください。
-          # ここでは、day1/lecture-ai-engineering/day5/requirements.txt を使用します。
-          if [ -f day1/lecture-ai-engineering/day5/requirements.txt ]; then
+          # requirements.txtのパスを動的に検出
+          # まず、day5/requirements.txt パスを試す
+          if [ -f "day5/requirements.txt" ]; then
+            echo "requirements.txtが見つかりました: day5/requirements.txt"
+            pip install -r day5/requirements.txt
+          # 次に、day1/lecture-ai-engineering/day5/requirements.txt パスを試す
+          elif [ -f "day1/lecture-ai-engineering/day5/requirements.txt" ]; then
+            echo "requirements.txtが見つかりました: day1/lecture-ai-engineering/day5/requirements.txt"
             pip install -r day1/lecture-ai-engineering/day5/requirements.txt
           else
-            echo "requirements.txt not found at day1/lecture-ai-engineering/day5/requirements.txt"
-            # 必要なライブラリを直接インストール (例)
-            pip install pandas scikit-learn pytest great-expectations mlflow
+            echo "requirements.txtが見つかりません。必要なライブラリを直接インストールします。"
+            # 必要なライブラリを直接インストール
+            pip install pandas scikit-learn pytest great-expectations mlflow black==25.1.0
           fi
           pip install pytest # pytestを明示的にインストール
+
+      - name: Run black format check
+        run: |
+          # blackのフォーマットチェックを実行
+          # まず、day5/演習3 パスを試す
+          if [ -d "day5/演習3" ]; then
+            echo "ディレクトリが見つかりました: day5/演習3"
+            black --check day5/演習3
+          # 次に、day1/lecture-ai-engineering/day5/演習3 パスを試す
+          elif [ -d "day1/lecture-ai-engineering/day5/演習3" ]; then
+            echo "ディレクトリが見つかりました: day1/lecture-ai-engineering/day5/演習3"
+            black --check day1/lecture-ai-engineering/day5/演習3
+          else
+            echo "ディレクトリが見つかりません。リポジトリ構造を確認してください。"
+            # ディレクトリ構造を表示して確認
+            find . -type d -name "演習3"
+            exit 1
+          fi
 
       - name: Run model comparison tests
         run: |
           # pytestコマンドの実行ディレクトリと対象ディレクトリを指定
           # プロジェクトのルートディレクトリからテストを実行し、
-          # day1/lecture-ai-engineering/day5/演習3/tests をテスト対象とする
-          pytest day1/lecture-ai-engineering/day5/演習3/tests
+          # テスト対象のパスを修正
+          # まず、day5/演習3/tests パスを試す
+          if [ -d "day5/演習3/tests" ]; then
+            echo "テストディレクトリが見つかりました: day5/演習3/tests"
+            pytest day5/演習3/tests
+          # 次に、day1/lecture-ai-engineering/day5/演習3/tests パスを試す
+          elif [ -d "day1/lecture-ai-engineering/day5/演習3/tests" ]; then
+            echo "テストディレクトリが見つかりました: day1/lecture-ai-engineering/day5/演習3/tests"
+            pytest day1/lecture-ai-engineering/day5/演習3/tests
+          else
+            echo "テストディレクトリが見つかりません。リポジトリ構造を確認してください。"
+            # ディレクトリ構造を表示して確認
+            find . -type d -name "tests" | grep -i "演習3"
+            exit 1
+          fi

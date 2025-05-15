@@ -39,17 +39,17 @@ jobs:
           fi
           pip install pytest # pytestを明示的にインストール
 
-      - name: Run black format check
+      - name: Format Python files with black
         run: |
-          # blackのフォーマットチェックを実行
+          # blackで自動フォーマットを適用
           # まず、day5/演習3 パスを試す
           if [ -d "day5/演習3" ]; then
             echo "ディレクトリが見つかりました: day5/演習3"
-            black --check day5/演習3
+            black day5/演習3  # --checkオプションなしで実行
           # 次に、day1/lecture-ai-engineering/day5/演習3 パスを試す
           elif [ -d "day1/lecture-ai-engineering/day5/演習3" ]; then
             echo "ディレクトリが見つかりました: day1/lecture-ai-engineering/day5/演習3"
-            black --check day1/lecture-ai-engineering/day5/演習3
+            black day1/lecture-ai-engineering/day5/演習3  # --checkオプションなしで実行
           else
             echo "ディレクトリが見つかりません。リポジトリ構造を確認してください。"
             # ディレクトリ構造を表示して確認

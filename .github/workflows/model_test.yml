@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          submodules: true  # サブモジュールを含めてクローン
 
       - name: Set up Python
         uses: actions/setup-python@v3

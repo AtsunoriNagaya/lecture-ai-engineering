@@ -11,6 +11,7 @@ import pickle
 import time
 import great_expectations as gx
 
+
 class DataLoader:
     """データロードを行うクラス"""
 
@@ -20,10 +21,16 @@ class DataLoader:
         if path:
             return pd.read_csv(path)
         else:
-            # ローカルのファイル
-            local_path = "data/Titanic.csv"
+            # スクリプトのディレクトリを取得
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            # ローカルのファイルパスを構築
+            local_path = os.path.join(script_dir, "data", "Titanic.csv")
             if os.path.exists(local_path):
                 return pd.read_csv(local_path)
+            else:
+                # dataディレクトリが存在しない、またはファイルが存在しない場合のエラーハンドリング
+                print(f"エラー: {local_path} が見つかりません。")
+                return None
 
     @staticmethod
     def preprocess_titanic_data(data):
